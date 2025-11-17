@@ -1,11 +1,14 @@
 import { useState, useEffect } from 'react';
 import { Plus, Search, Edit, Trash2 } from 'lucide-react';
 import { studentService } from '../services/api';
+import StudentForm from '../components/students/StudentForm';
 
 function StudentList() {
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState('');
+  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [editingStudent, setEditingStudent] = useState(null);
 
   useEffect(() => {
     fetchStudents();
@@ -22,16 +25,55 @@ function StudentList() {
     }
   };
 
+  const handleAddStudent = async (studentData) => {
+    try {
+      await studentService.createStudent(studentData);
+      await fetchStudents(); // Recargar la lista
+      alert('Student added successfully!');
+    } catch (error) {
+      console.error('Error adding student:', error);
+      throw error;
+    }
+  };
+
+  const handleEditStudent = async (studentData) => {
+    try {
+      await studentService.updateStudent(editingStudent.id, studentData);
+      await fetchStudents(); // Recargar la lista
+      setEditingStudent(null);
+      alert('Student updated successfully!');
+    } catch (error) {
+      console.error('Error updating student:', error);
+      throw error;
+    }
+  };
+
   const handleDelete = async (id) => {
     if (window.confirm('Are you sure you want to delete this student?')) {
       try {
         await studentService.deleteStudent(id);
         setStudents(students.filter(s => s.id !== id));
+        alert('Student deleted successfully!');
       } catch (error) {
         console.error('Error deleting student:', error);
         alert('Error deleting student');
       }
     }
+  };
+
+  const openAddForm = () => {
+    setEditingStudent(null);
+    setIsFormOpen(true);
+  };
+
+  const openEditForm = (student) => {
+    setEditingStudent(student);
+    setIsFormOpen(true);
+  };
+
+  const closeForm = () => {
+    setIsFormOpen(false);
+    setEditingStudent(null);
   };
 
   const filteredStudents = students.filter(student =>
@@ -44,7 +86,10 @@ function StudentList() {
     <div className="p-6">
       <div className="flex justify-between items-center mb-6">
         <h1 className="text-3xl font-bold">Students</h1>
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-600">
+        <button
+          onClick={openAddForm}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg flex items-center gap-2 hover:bg-blue-600"
+        >
           <Plus size={20} />
           Add Student
         </button>
@@ -116,7 +161,10 @@ function StudentList() {
                   </td>
                   <td className="px-6 py-4 whitespace-nowrap">
                     <div className="flex gap-2">
-                      <button className="text-blue-600 hover:text-blue-800">
+                      <button
+                        onClick={() => openEditForm(student)}
+                        className="text-blue-600 hover:text-blue-800"
+                      >
                         <Edit size={18} />
                       </button>
                       <button 
@@ -133,6 +181,14 @@ function StudentList() {
           </tbody>
         </table>
       </div>
+
+      {/* Modal Form */}
+      <StudentForm
+        isOpen={isFormOpen}
+        onClose={closeForm}
+        onSubmit={editingStudent ? handleEditStudent : handleAddStudent}
+        student={editingStudent}
+      />
     </div>
   );
 }
