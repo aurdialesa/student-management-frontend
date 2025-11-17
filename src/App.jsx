@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Home, Users, BookOpen, BarChart } from 'lucide-react';
 import Dashboard from './pages/Dashboard';
 import StudentList from './pages/StudentList';
-
+import Reports from './pages/Reports'; 
 function App() {
   return (
     <Router>
