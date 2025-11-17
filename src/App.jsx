@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Home, Users, BookOpen, BarChart } from 'lucide-react';
 import Dashboard from './pages/Dashboard';
 import StudentList from './pages/StudentList';
+import CourseList from './pages/CourseList';
 import Reports from './pages/Reports'; 
 function App() {
   return (
@@ -37,8 +38,8 @@ function App() {
           <Routes>
             <Route path="/" element={<Dashboard />} />
             <Route path="/students" element={<StudentList />} />
-            <Route path="/courses" element={<div className="p-6">Courses Page (Coming Soon)</div>} />
-            <Route path="/reports" element={<div className="p-6">Reports Page (Coming Soon)</div>} />
+            <Route path="/courses" element={<CourseList />} />
+            <Route path="/reports" element={<Reports/>} />
           </Routes>
         </div>
       </div>
